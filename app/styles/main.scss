@@ -1,0 +1,71 @@
+@import "sass-bootstrap/lib/bootstrap";
+@import "compass/css3/transition";
+@import "compass/css3/box-shadow";
+@import "compass/css3/box-sizing";
+@import "animate";
+
+body {
+	width: 940px;
+	margin: 0 auto;
+}
+
+*, *:before, *:after {
+	@include box-sizing(border-box);
+}
+
+input, .add-on {
+	@include box-sizing(content-box);
+}
+
+.designation-component {
+	position: relative;
+	margin-bottom:25px;
+	border-radius:4px;
+	padding: 1% 5%;
+	border: 1px solid #F8F8F8;
+
+	@include box-shadow(1px 1px 6px 1px #ECECEB);
+	@include transition(all 0.3s ease);
+
+	&:hover {
+		background-color: #D5D5D5;
+		border:1px solid #B9B7B7;
+
+		@include box-shadow(3px 3px 10px 3px #C2C2C2);
+
+		.designation-delete { opacity: 1; cursor: pointer; }
+	}
+}
+
+.fund-info { text-align: center; }
+
+.input-help {
+  font-size:0.7em;
+  color:gray;
+}
+
+hr { clear:both; }
+
+.designation-delete {
+	position: absolute;
+	right: -15px;
+	top:-15px;
+	background: url(../img/delete-bubble.png) no-repeat center center;
+	width: 35px;
+	height: 35px;
+	opacity: 0;
+
+	@include transition(opacity 0.4s ease-out);
+}
+
+.action-bar { text-align: center; }
+.spacer { margin:0 10px; font-size:1.2em; }
+
+hr.stylish {
+	border: 0;
+	height: 1px;
+	background-image: -webkit-linear-gradient(left, rgba(0,0,0,0), rgba(0,0,0,0.75), rgba(0,0,0,0)); 
+	background-image:    -moz-linear-gradient(left, rgba(0,0,0,0), rgba(0,0,0,0.75), rgba(0,0,0,0)); 
+	background-image:     -ms-linear-gradient(left, rgba(0,0,0,0), rgba(0,0,0,0.75), rgba(0,0,0,0)); 
+	background-image:      -o-linear-gradient(left, rgba(0,0,0,0), rgba(0,0,0,0.75), rgba(0,0,0,0)); 
+}
