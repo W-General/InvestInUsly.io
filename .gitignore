@@ -1,3 +1,5 @@
+vendor
+dist
 .sass-cache
 .tmp
 node_modules

@@ -115,10 +115,19 @@ require(['jquery', 'underscore', 'backbone', 'accounting', 'bootbox', 'bb-storag
 				$component.fadeIn();
 			},
 			prepareForm: function(total) {
+				var me = this;
 				this.$('input[name=amount]').val(total);
+
 				// submit an ajax write to the db to record this transaction
-				// update the return URL with the donation ID as a GET param
-				// clear out local storage so that this donation ID is unique
+				$.post('api/gift', this.collection.toJSON(), function (res) {
+
+					// update the return URL with the donation ID as a GET param
+					me.$('input[name=return]').val(res.url);
+
+					// clear out local storage so that this donation ID is unique
+					me.collection.destroy();
+
+				}, 'json');				
 			},
 			updateTotalDisplay: function (total) {
 				this.$total.fadeOut(350,function() {
@@ -130,11 +139,12 @@ require(['jquery', 'underscore', 'backbone', 'accounting', 'bootbox', 'bb-storag
 				if (this.collection.total > 0) {
 					this.prepareForm(this.collection.total);
 				} else {
-
 					// Don't submit the form
 					bootbox.alert("<h1>Something's missing.</h1>You haven't made any designations yet.");
 					return false;
 				}
+
+				return false;
 			}
 		});
 

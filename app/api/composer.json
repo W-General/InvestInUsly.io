@@ -1,0 +1,12 @@
+{
+    "name": "Mark/api",
+    "authors": [
+        {
+            "name": "Mark LeMerise",
+            "email": "mark.s.lemerise@gmail.com"
+        }
+    ],
+    "require-dev": {
+    	"Slim/Slim": "*"
+    }
+}
