@@ -4,9 +4,11 @@
 @import "compass/css3/box-sizing";
 @import "animate";
 
-body {
-	width: 940px;
-	margin: 20px auto;
+$almostBlack: #524A4A;
+$almostBlacker: #332E2E;
+
+body, html {
+	height: 100%;
 }
 
 *, *:before, *:after {
@@ -17,7 +19,25 @@ input, .add-on {
 	@include box-sizing(content-box);
 }
 
-.designation-component {
+.action-bar {
+	margin: 1em 0;
+}
+
+.face-circle {
+	border: 3px solid #FFF;
+	box-shadow: 1px 1px 7px 0px #352F2F;
+	border-radius: 100%;
+}
+
+.copyright {
+	margin: 1em 0;
+}
+
+.centered {
+	text-align: center;
+}
+
+.investment-box {
 	position: relative;
 	margin-bottom:25px;
 	border-radius:4px;
@@ -33,33 +53,118 @@ input, .add-on {
 
 		@include box-shadow(3px 3px 10px 3px #C2C2C2);
 
-		.designation-delete { opacity: 1; cursor: pointer; }
+		.delete-investment { opacity: 1; cursor: pointer; }
 	}
-}
-
-.fund-info { text-align: center; }
-
-.input-help {
-  font-size:0.7em;
-  color:gray;
 }
 
 hr { clear:both; }
 
-.designation-delete {
+.delete-investment  {
+	border-radius: 10px;
 	position: absolute;
 	right: -15px;
 	top:-15px;
-	background: url(../img/delete-bubble.png) no-repeat center center;
-	width: 35px;
-	height: 35px;
+	background-color: black;
 	opacity: 0;
+
+	&:before {
+		content: 'x';
+		color: white;
+	}
 
 	@include transition(opacity 0.4s ease-out);
 }
 
-.action-bar { text-align: center; }
+.layover {
+	position: relative;
+
+	&:hover {
+		img {
+			opacity: 0.3;
+		}
+
+		.layover-text {
+			opacity: 1;
+		}
+	}
+
+	img {
+		@include transition(0.2s opacity ease-in);		
+	}
+
+	.layover-text {
+		color: $almostBlacker;
+		font: 3em 'Raleway';
+		font-weight: bold;
+		height: 100%;
+		line-height: 3em;
+		opacity: 0;
+		position: absolute;
+		width: 100%;
+		z-index: 1;
+		@include transition(0.2s opacity ease-in);
+	}
+}
+
 .spacer { margin:0 10px; font-size:1.2em; }
+
+.section-title {
+	font: 1.5em 'Raleway';
+}
+.sub-title {
+	font: 2em 'Raleway';
+	color: white;
+}
+.big-section-title {
+	color: white;
+	font: 4em 'Raleway';
+}
+.body-content {
+	width: 70%;
+	margin: 0 auto;
+}
+
+.big-section {
+	width: 100%;
+	padding: 2em;
+	margin-bottom: 1em;
+	-webkit-background-size: cover;
+	-moz-background-size: cover;
+	-o-background-size: cover;
+	background-size: cover;
+}
+
+.section-black {
+	color: gray;
+	background-color: #2E2E2E;
+}
+
+.snippet-row {
+	margin: 1em 0;
+}
+
+.snippet-box {
+	.face-circle {
+		display: inline-block;
+	}
+
+	.snippet-text {
+		display: inline-block;
+		width: 75%;
+	}
+}
+
+.sandy-beach {
+	background: url(../img/beach-footsteps.jpg);
+}
+
+.guy-bike {
+	background: url(../img/guy-bike.jpg);
+
+	.big-section-title, .sub-title {
+		color: $almostBlack;
+	}
+}
 
 hr.stylish {
 	border: 0;

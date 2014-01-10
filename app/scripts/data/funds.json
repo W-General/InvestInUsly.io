@@ -1,20 +1,26 @@
 [
-	{"name":"General Fund","info":"supports the day-to-day operations of the church"},
-	{"name":"Building Fund","info":"supports building expansion projects"},
-	{"name":"Missions Fund","info":"supports C&MA International Workers-sponsored missionaries"},
-	{"name":"Home Missions","info":"supports nationally-sponsored missionaries while at home"},
-	{"name":"Benevolent Fund","info":"supports locally less fortunate"},
-	{"name":"Alliance Men","info":"supports Alliance Mens ministry"},
-	{"name":"Alliance Women","info":"supports Alliance Womens ministry"},
-	{"name":"Alliance Youth","info":"supports Alliance Youth ministry/life"},
-	{"name":"Global Awareness","info":"provides relief for natural disasters and other international events"},
-	{"name":"Outreach","info":"supports local outreach / evangelism"},
-	{"name":"Alliance Womens Project","info":"supports annual Alliance Womens Project"},
-	{"name":"Council Receipts","info":"covers the cost of sending people to Council"},
-	{"name":"Summer Kids' Camp","info":"covers the cost of supplies for this annual program"},
-	{"name":"Library","info":"covers the cost of purchasing new reading materials for the library"},
-	{"name":"CAMA Services","info":"supports national relief organization of the C&MA (Compassion And Mercy Associates)"},
-	{"name":"Special Events","info":"covers infrequent events that occur at RCC (ie. singing groups)"},
-	{"name":"All Stars Bible Club","info":"covers miscellaneous Wednesday night expenses"},
-	{"name":"Love Offering","info":"helps missionaries with day-to-day expenses, guest ministries and speakers"}
+	{
+		"name": "Buildin' stuff",
+		"info": "We'll build amazing products. (No terrible Bootstrap sites)."
+	},
+	{
+		"name": "General Fund",
+		"info": "Odds and ends, this and that"
+	},
+	{
+		"name": "Office Fund",
+		"info": "Pens, pencils, paper, markers, highlighters, bean bags for sitting"
+	},
+	{
+		"name": "Company Picnic",
+		"info": "An amazing team-building and networking outing (of course you'll be invited)"
+	},
+	{
+		"name": "Devices",
+		"info": "iPads, iPhones, Macbooks, and everything we need to be a real startup"
+	},
+	{
+		"name": "Make your own",
+		"info": "How would you spend your money for us?"
+	}
 ]

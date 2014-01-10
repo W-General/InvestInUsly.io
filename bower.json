@@ -1,17 +1,21 @@
 {
+  "name": "investinusly",
   "ignore": [
     "**/.*",
     "node_modules",
     "components"
   ],
   "dependencies": {
-    "backbone": "~1.0.0",
+    "backbone": "*",
     "accounting": "~0.3.2",
     "jquery": "1.9.1",
-    "bootbox": "~3.3.0",
-    "sass-bootstrap": "~2.3.2",
+    "bootbox": "*",
+    "sass-bootstrap": "*",
     "requirejs": "~2.1.6",
     "underscore": "~1.5.0",
-    "backbone.localStorage": "~1.1.6"
+    "backbone.localStorage": "~1.1.6",
+    "backbone.marionette": "~1.4.1",
+    "backbone.stickit": "~0.7.0",
+    "requirejs-text": "~2.0.10"
   }
 }

@@ -1,11 +1,14 @@
 require.config({
 	paths: {
 		'accounting': '../components/accounting/accounting',
-		'backbone'	: '../components/backbone/backbone',
-		'bb-storage': '../components/backbone.localStorage/backbone.localStorage',
-		'bootbox'	: '../components/bootbox/bootbox',
-		'bootstrap'	: 'vendor/bootstrap',
-		'jquery'	: '../components/jquery/jquery',
+		'backbone': '../components/backbone/backbone',
+		'localStorage': '../components/backbone.localStorage/backbone.localStorage',
+		'bootbox': '../components/bootbox/bootbox',
+		'bootstrap': 'vendor/bootstrap',
+		'jquery': '../components/jquery/jquery',
+		'marionette': '../components/backbone.marionette/lib/backbone.marionette',
+		'stickit': '../components/backbone.stickit/backbone.stickit',
+		'text': '../components/requirejs-text/text',
 		'underscore': '../components/underscore/underscore'
 	},
 	shim: {
@@ -16,56 +19,168 @@ require.config({
 			deps: ['jquery', 'underscore'],
 			exports: 'Backbone'
 		},
-		'bb-storage': {
+		localStorage: {
 			deps: ['backbone']
 		},
-		'bootbox': {
+		bootbox: {
 			deps: ['bootstrap'],
 			exports: 'bootbox'
 		},
 		bootstrap: {
 			deps: ['jquery'],
 			exports: 'jquery'
+		},
+		marionette: {
+			deps: ['backbone'],
+			exports: 'Backbone.Marionette'
+		},
+		stickit: {
+			deps: ['backbone']
 		}
 	}
 });
 
-require(['jquery', 'underscore', 'backbone', 'accounting', 'bootbox', 'bb-storage'],
-	function ($, _, Backbone, accounting, bootbox) {
+
+/**
+ * LOADS THE DEPENDENCIES FOR THIS APP AND PASSES THEM TO A CALLBACK
+*/
+require(['jquery', 'underscore', 'marionette', 'backbone', 'accounting', 'bootbox', 'text!data/funds.json', 'localStorage', 'stickit'],
+	function ($, _, Marionette, Backbone, accounting, bootbox, funds) {
 		'use strict';
 
-		var dispatcher = _.clone(Backbone.Events),
-			fundsPromise = $.get('scripts/data/funds.json').promise(),
-			router;
+		var fundList = JSON.parse(funds);
 
-		var getFunds = function(context,callback) {
-			fundsPromise.done(function (data) {
-				callback.call(context,data);
+		/**
+		 * SETTING UP THE APPLICATION OBJECT
+		 */
+		var app = new Marionette.Application();
+
+		app.__startHistory = function() {
+			if (Backbone.history) {
+				Backbone.history.start();
+			}
+		};
+
+		// FETCH THE COLLECTION FROM STORAGE
+		app.addInitializer(function() {
+			this.investmentList = new InvestmentList();
+		});
+
+		// LAYOUT THE DIFFERENT SECTIONS IN OUR APP
+		app.addRegions({
+			controlBar: '#control-bar',
+			investTable: '#investment-list'
+		});
+
+		// BEST PRACTICE TO START BACKBONE HISTORY AFTER ALL INITIALIZERS
+		app.on("initialize:after", function() {
+			var jqXHR = this.investmentList.fetch();
+
+			jqXHR.always(this.__startHistory);
+
+			this.controlBar.show(new ControlBar());
+		});
+
+		/**
+		 * SET UP THE CONTROLLER
+		 * IT'S JUST A FUNCTION, NOTHING SPECIAL
+		 */
+		app.controller = function (appObject) {
+
+			this.loadDonations = function() {
+				appObject.investTable.show(new InvestmentTable({ collection: appObject.investmentList }));
+			};
+
+			app.vent.on('add:investment', function() {
+				appObject.investmentList.add(new Investment());
 			});
 		};
 
-		var Designation = Backbone.Model.extend({
-			defaults:{
-				amount: 0,
-				fund: 'General Fund',
-				paypalId: 0
+		/**
+		 * SET UP THE ROUTER AND SPECIFY THE CONTROLLER
+		 */
+		app.router = new Marionette.AppRouter({
+			appRoutes: {
+				'': 'loadDonations'
+			},
+			controller: new app.controller(app)
+		});
+
+		/**
+		 * SET UP VIEWS
+		 */
+		var ControlBar = Marionette.ItemView.extend({
+			events: {
+				'click .add-investment': 'addDonation',
+				'click .submit-investments': 'submitDonations'
+			},
+			template: _.template($('#tpl-control-bar').html()),
+			addDonation: function() {
+				app.vent.trigger('add:investment');
 			}
 		});
 
-		var DesignationList = Backbone.Collection.extend({
-			model: Designation,
+		var InvestmentBox = Marionette.ItemView.extend({
+			className: 'investment-box',
+			bindings: {
+				'.investment-amount': 'amount',
+				'.fund-list': {
+					observe: 'fund',
+					selectOptions: {
+						collection: fundList,
+						labelPath: 'name',
+						valuePath: 'name'
+					}
+				}
+			},
+			modelEvents: {
+				'change:fund': '__setFundDescription'
+			},
+			ui: {
+				fundDescription: '.fund-description'
+			},
+			template: _.template($('#tpl-investment-box').html()),
+			onRender: function() {
+				this.stickit();
+			},
+			__setFundDescription: function() {
+				var newText = _.findWhere(fundList, { name: this.model.get('fund') }).info;
+				
+				this.ui.fundDescription.fadeOut(function() {
+					$(this).text(newText).fadeIn();
+				});
+			}
+		});
+
+		// A VIEW TO SHOW A LIST OF INVESTMENTS
+		var InvestmentTable = Marionette.CollectionView.extend({
+			emptyView: Marionette.ItemView.extend({
+				template: _.template('Please invest something...please. :)')
+			}),
+			itemView: InvestmentBox
+		});
+
+
+		/**
+		 * DEFINE THE OBJECTS IN OUR PROBLEM DOMAIN
+		 */
+		var Investment = Backbone.Model.extend({
+			defaults:{
+				amount: 0,
+				fund: 'General Fund'
+			}
+		});
+
+		var InvestmentList = Backbone.Collection.extend({
+			model: Investment,
 			localStorage: new Backbone.LocalStorage('fund-designation'),
+			total: 0,
 			initialize: function() {
 				this.on('add remove change:amount',this.totalAll);
 				this.on('change',this.save);
 			},
-			destroyAll: function() {
-				while (this.models.length > 0) {
-					this.models[0].destroy();
-				}
-			},
 			totalAll: function() {
-				var newTotal = this.reduce(function (memo,model) {
+				var newTotal = this.reduce(function (memo, model) {
 					return memo + model.get('amount');
 				}, 0);
 
@@ -79,182 +194,9 @@ require(['jquery', 'underscore', 'backbone', 'accounting', 'bootbox', 'bb-storag
 			}
 		});
 
-		var DesignationApp = Backbone.View.extend({
-			el:'#gift-app',
-			$total: $('#gift-total'),
-			$form: $('.gift-app-form'),
-			deferRender: false,
-			events: {
-				'click .designation-add':'addComponentListener',
-				'click .designation-clear-all': 'confirmClear',
-				'submit .gift-app-form':'submitDonation'
-			},
-			initialize: function() {
-				if (this.collection.length === 0) {
-					this.collection.add(new Designation());
-				}
-
-				// this.listenTo(this.collection,'change:total',this.updateTotalDisplay);
-				this.listenTo(dispatcher,'donation.execute',this.submitDonation);
-				this.render();
-			},
-			render: function() {
-				_.each(this.collection.models, this.addComponent, this);
-			},
-			addComponentListener: function() {
-				var designation = new Designation();
-				this.collection.add(designation);
-				this.addComponent(designation);
-			},
-			addComponent: function(model) {
-				var $component;
-
-				$component = new DesignationComponent({'model':model}).render().$el.hide();
-
-				this.$('#component-wrapper').append($component);
-				$component.fadeIn();
-			},
-			prepareForm: function(total) {
-				var me = this;
-				this.$('input[name=amount]').val(total);
-
-				// submit an ajax write to the db to record this transaction
-				$.post('api/gift', this.collection.toJSON(), function (res) {
-
-					// update the return URL with the donation ID as a GET param
-					me.$('input[name=return]').val(res.url);
-
-					// clear out local storage so that this donation ID is unique
-					me.collection.destroy();
-
-				}, 'json');				
-			},
-			updateTotalDisplay: function (total) {
-				this.$total.fadeOut(350,function() {
-					$(this).text(accounting.formatMoney(total)).fadeIn(350);
-				});
-			},
-			submitDonation: function() {
-
-				if (this.collection.total > 0) {
-					this.prepareForm(this.collection.total);
-				} else {
-					// Don't submit the form
-					bootbox.alert("<h1>Something's missing.</h1>You haven't made any designations yet.");
-					return false;
-				}
-
-				return false;
-			}
-		});
-
-		var DesignationComponent = Backbone.View.extend({
-			tagName: 'fieldset',
-			className: 'designation-component row-fluid',
-			$fundList: null,
-			template: _.template($('script#tpl-designation-component').html()),
-			events: {
-				'change select': 'updateFund',
-				'click .designation-delete': 'destroyView',
-				'blur .designation-amount': 'updateAmount'
-			},
-			initialize: function() {
-				this.listenTo(this.model,'destroy',this.remove);
-			},
-			updateFund: function() {
-				var $op = this.$('.fund option:selected');
-
-				this.model.set({ 'fund': $op.val() });
-				this.updateFundInfo($op.data('info'));
-			},
-			updateFundInfo: function(info) {
-				this.$('.fund-info').fadeOut(200,function() {
-					$(this).text('Your donation ' + info + '.').fadeIn(350);
-				});
-			},
-			updateAmount: function(e) {
-				var amount = parseFloat(e.target.value);
-
-				if ($.isNumeric(amount) && amount > 0) {
-					this.model.set({'amount': amount});
-				}
-			},
-			render: function() {
-				var renderFunds = function(funds) {
-					var fund = this.model.get('fund'),
-						info = _.findWhere(funds,{'name':fund}).info;
-
-					this.$el.html(this.template({
-						'designation':this.model.toJSON(),
-						'funds':funds,
-						'info': info
-					}));
-
-					this.$('.tooltip').tooltip();
-				};
-
-				getFunds(this,renderFunds);
-				return this;
-			},
-			destroyView: function () {
-				var designation = this.model;
-
-				this.$el.fadeOut(400, function() {
-					designation.destroy();
-				});
-			}
-		});
-
-		var AppRouter = Backbone.Router.extend({
-			routes: {
-				'':'load'
-			},
-			load: function() {
-				var view,
-					list = new DesignationList(),
-					challengeCache = function(collection,message) {
-						bootbox.dialog(message,
-						[
-							{
-								'label': 'Continue to PayPal',
-								'class': 'btn',
-								'callback': function() { $('.gift-app-form').trigger('submit'); }
-							},
-							{
-								'label':'Add more',
-								'class': 'btn-success'
-							}
-						]);
-					},
-					evaluateCache = function(collection) {
-						if (collection.length > 0) {
-							collection.trigger('fetch');
-							var body, template = _.template($('script#tpl-cache-review').html());
-
-							body = template({
-								accounting: accounting,
-								designations: collection.toJSON(),
-								total: collection.total
-							});
-
-							challengeCache(collection,body);
-						}
-					};
-
-				list.fetch({ 
-					success: function(collection) {
-						if (collection.total > 0) {
-							evaluateCache(collection);
-						}
-					} 
-				});
-
-				view = new DesignationApp({'collection':list});
-			}
-		});
-
-		router = new AppRouter();
-		Backbone.history.start();
-
+		/**
+		 * LET'S GO!
+		 */
+		app.start();
 	}
 );
