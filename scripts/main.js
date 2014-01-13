@@ -110,7 +110,7 @@ require(['jquery', 'underscore', 'marionette', 'backbone', 'accounting', 'localS
 		 */
 		app.controller = function() {
 
-			this.loadDonations = function() {
+			this.showInvestments = function() {
 				app.investTable.show(new InvestmentTable({ collection: app.investmentList }));
 			};
 
@@ -132,7 +132,7 @@ require(['jquery', 'underscore', 'marionette', 'backbone', 'accounting', 'localS
 		 */
 		app.router = new Marionette.AppRouter({
 			appRoutes: {
-				'': 'loadDonations'
+				'': 'showInvestments'
 			},
 			controller: new app.controller()
 		});

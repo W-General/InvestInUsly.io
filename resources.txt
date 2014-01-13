@@ -1,0 +1,20 @@
+Todo MVC
+http://todomvc.com/
+
+Backbone.js annotated source (not scary)
+http://backbonejs.org/docs/backbone.html
+
+Gentle Introduction to Marionette.js
+https://leanpub.com/marionette-gentle-introduction
+
+Backbone plugin repo
+http://backplug.io
+
+Backbone design patterns
+http://ricostacruz.com/backbone-patterns/
+
+Choosing a Javascript MVC Framework
+http://www.funnyant.com/choosing-javascript-mvc-framework
+
+Backbonification - Migrating NewsBlur From DOM Spaghetti to Backbone.js
+https://speakerdeck.com/samuelclay/backbonification-migrating-newsblur-from-dom-spaghetti-to-backbone-dot-js
