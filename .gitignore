@@ -1,8 +1,5 @@
-vendor
 .sass-cache
 .tmp
 node_modules
-app/components
 .DS_Store*
 *.sublime*
-composer.lock
