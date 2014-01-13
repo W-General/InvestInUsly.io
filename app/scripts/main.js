@@ -1,10 +1,14 @@
+/**
+ * JUST A REQUIREJS CONFIGURATION, NOTHING EXCITING
+ */
+
 require.config({
 	paths: {
 		'accounting': '../components/accounting/accounting',
 		'backbone': '../components/backbone/backbone',
-		'localStorage': '../components/backbone.localStorage/backbone.localStorage',
 		'bootstrap': 'vendor/bootstrap',
 		'jquery': '../components/jquery/jquery',
+		'localStorage': '../components/backbone.localStorage/backbone.localStorage',
 		'marionette': '../components/backbone.marionette/lib/backbone.marionette',
 		'stickit': '../components/backbone.stickit/backbone.stickit',
 		'underscore': '../components/underscore/underscore'
@@ -36,6 +40,7 @@ require.config({
 
 
 /**
+ * PLEASE IGNORE EVERYTHING UP TO THIS POINT
  * LOADS THE DEPENDENCIES FOR THIS APP AND PASSES THEM TO A CALLBACK
 */
 require(['jquery', 'underscore', 'marionette', 'backbone', 'accounting', 'localStorage', 'stickit'],
@@ -44,8 +49,8 @@ require(['jquery', 'underscore', 'marionette', 'backbone', 'accounting', 'localS
 
 		/**
 		 * 
-		 * MAKE UP YOUR OWN FUND HERE
-		 *
+		 * 1. MAKE UP YOUR OWN FUND HERE
+		 * Make sure it has at least a name
 		 */
 		var fundList = [
 			{
@@ -87,7 +92,7 @@ require(['jquery', 'underscore', 'marionette', 'backbone', 'accounting', 'localS
 		});
 
 		// BEST PRACTICE TO START BACKBONE HISTORY AFTER ALL INITIALIZERS
-		app.on("initialize:after", function() {
+		app.on('initialize:after', function() {
 			var jqXHR = this.investmentList.fetch();
 
 			jqXHR.always(this.__startHistory);
@@ -109,7 +114,11 @@ require(['jquery', 'underscore', 'marionette', 'backbone', 'accounting', 'localS
 				app.investTable.show(new InvestmentTable({ collection: app.investmentList }));
 			};
 
-			app.vent.on('add:investment', function() {
+			/**
+			 * 2.A. PUB/SUB
+			 * Listen to the event triggered when a user adds another investment (you come up with the name and remember it)
+			 */
+			app.vent.on(/* ADD YOUR CUSTOM EVENT NAME HERE */, function() {
 				app.investmentList.add(new Investment());
 			});
 		};
@@ -135,23 +144,33 @@ require(['jquery', 'underscore', 'marionette', 'backbone', 'accounting', 'localS
 		 *
 		 * 
 		 */
+
+
+		// DEFINES THE CONTROL BAR WITH BUTTONS AND INVESTMENT TOTAL IN IT
 		var ControlBar = Marionette.ItemView.extend({
 			events: {
-				'click .add-investment': 'addDonation',
-				'click .submit-investments': 'submitDonations'
+				'click .add-investment': 'onAddInvestment',
+				'click .submit-investments': 'onSubmitInvestments'
 			},
 			template: _.template($('#tpl-control-bar').html()),
 			onRender: function() {
 				this.displayTotal(app.investmentList.totalAll());
 				this.listenTo(app.investmentList, 'change:total', this.displayTotal);
 			},
-			addDonation: function() {
-				app.vent.trigger('add:investment');
+			onAddInvestment: function() {
+
+				/**
+				 * 2.B. PUB / SUB
+				 * Trigger the event
+				 * Hint: This name should be familiar.
+				 */
+				app.vent.trigger(/* PUT EVENT NAME HERE */);
 			},
 			displayTotal: function (total) {
 				this.$('#investment-total').text(accounting.formatMoney(total));
 			}
 		});
+
 
 		// DEFINES A SINGLE INVESTMENT BOX VIEW
 		var InvestmentBox = Marionette.ItemView.extend({
@@ -175,8 +194,8 @@ require(['jquery', 'underscore', 'marionette', 'backbone', 'accounting', 'localS
 			},
 			events: { 'click .delete-investment': 'onDelete' },
 			modelEvents: { 'change:fund': '__setFundDescription' },
-			ui: { fundDescription: '.fund-description' },
 			template: _.template($('#tpl-investment-box').html()),
+			ui: { fundDescription: '.fund-description' },
 			onRender: function() {
 				this.stickit();
 				this.__setFundDescription();
@@ -192,9 +211,11 @@ require(['jquery', 'underscore', 'marionette', 'backbone', 'accounting', 'localS
 				var newFund = _.findWhere(fundList, { name: this.model.get('fund') });
 				
 				this.ui.fundDescription.fadeOut(function() {
-					if (newFund) {
-						$(this).text(newFund.info).fadeIn();	
-					}
+					var newText = 'The money will wind up somewhere.';
+
+					if (newFund) { newText = newFund.info; }
+					
+					$(this).text(newText).fadeIn();
 				});
 			}
 		});
@@ -204,7 +225,13 @@ require(['jquery', 'underscore', 'marionette', 'backbone', 'accounting', 'localS
 			emptyView: Marionette.ItemView.extend({
 				template: _.template('Please invest something...please. :)')
 			}),
-			itemView: InvestmentBox
+			
+			/**
+			 * 3. VIEWS
+			 * Add an "itemView" parameter to this configuration object
+			 * And reference the "InvestmentBox" class as the item view
+			 */
+			
 		});
 
 
@@ -215,18 +242,26 @@ require(['jquery', 'underscore', 'marionette', 'backbone', 'accounting', 'localS
 		 *
 		 * 
 		 */
-		var Investment = Backbone.Model.extend({
-			defaults:{
-				amount: 0,
-				fund: 'General Fund'
-			}
-		});
+		
+		/**
+		 * 4. DEFINE YOUR DOMAIN
+		 * Create an Investment model by extending Backbone's Model base class
+		 * Pass a 'defaults' object to the configuration and define reasonable defaults for "amount" and "fund" fields
+		 */
+
 
 		var InvestmentList = Backbone.Collection.extend({
 			model: Investment,
-			// localStorage: new Backbone.LocalStorage('semjs-investments'),
 			total: 0,
-			url: 'http://pampang09.wesavebest.com/semjs/investments',
+
+			/**
+			 * 5. PERSISTENCE
+			 * If you can run this web app off a server, you can use the full CORS REST suite.
+			 * However, if this is being run from a file:// protocol, you must use local storage.
+			 */
+			// localStorage: new Backbone.LocalStorage('semjs-investments'),
+			// url: 'http://pampang09.wesavebest.com/semjs/investments', 
+
 			initialize: function() {
 				this.on('add remove change:amount',this.totalAll);
 				this.on('change', function (model) { model.save(); });
