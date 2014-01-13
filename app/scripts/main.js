@@ -192,9 +192,11 @@ require(['jquery', 'underscore', 'marionette', 'backbone', 'accounting', 'localS
 				var newFund = _.findWhere(fundList, { name: this.model.get('fund') });
 				
 				this.ui.fundDescription.fadeOut(function() {
-					if (newFund) {
-						$(this).text(newFund.info).fadeIn();	
-					}
+					var newText = 'The money will wind up somewhere.';
+
+					if (newFund) { newText = newFund.info; }
+
+					$(this).text(newText).fadeIn();
 				});
 			}
 		});
