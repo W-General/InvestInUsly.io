@@ -3,12 +3,10 @@ require.config({
 		'accounting': '../components/accounting/accounting',
 		'backbone': '../components/backbone/backbone',
 		'localStorage': '../components/backbone.localStorage/backbone.localStorage',
-		'bootbox': '../components/bootbox/bootbox',
 		'bootstrap': 'vendor/bootstrap',
 		'jquery': '../components/jquery/jquery',
 		'marionette': '../components/backbone.marionette/lib/backbone.marionette',
 		'stickit': '../components/backbone.stickit/backbone.stickit',
-		'text': '../components/requirejs-text/text',
 		'underscore': '../components/underscore/underscore'
 	},
 	shim: {
@@ -21,10 +19,6 @@ require.config({
 		},
 		localStorage: {
 			deps: ['backbone']
-		},
-		bootbox: {
-			deps: ['bootstrap'],
-			exports: 'bootbox'
 		},
 		bootstrap: {
 			deps: ['jquery'],
@@ -44,14 +38,34 @@ require.config({
 /**
  * LOADS THE DEPENDENCIES FOR THIS APP AND PASSES THEM TO A CALLBACK
 */
-require(['jquery', 'underscore', 'marionette', 'backbone', 'accounting', 'bootbox', 'text!data/funds.json', 'localStorage', 'stickit'],
-	function ($, _, Marionette, Backbone, accounting, bootbox, funds) {
+require(['jquery', 'underscore', 'marionette', 'backbone', 'accounting', 'localStorage', 'stickit'],
+	function ($, _, Marionette, Backbone, accounting) {
 		'use strict';
 
-		var fundList = JSON.parse(funds);
+		/**
+		 * 
+		 * MAKE UP YOUR OWN FUND HERE
+		 *
+		 */
+		var fundList = [
+			{
+				"name": "Buildin' Stuff",
+				"info": "We'll build amazing products. (No terrible Bootstrap sites)."
+			},
+			{
+				"name": "General Fund",
+				"info": "Odds and ends, this and that"
+			},
+			{
+				"name": "Office Stuff",
+				"info": "Mostly Macbook Pros, maybe some paper and stuff"
+			}
+		];
 
 		/**
+		 * 
 		 * SETTING UP THE APPLICATION OBJECT
+		 * 
 		 */
 		var app = new Marionette.Application();
 
@@ -61,7 +75,7 @@ require(['jquery', 'underscore', 'marionette', 'backbone', 'accounting', 'bootbo
 			}
 		};
 
-		// FETCH THE COLLECTION FROM STORAGE
+		// CREATE A NEW COLLECTION
 		app.addInitializer(function() {
 			this.investmentList = new InvestmentList();
 		});
@@ -82,32 +96,44 @@ require(['jquery', 'underscore', 'marionette', 'backbone', 'accounting', 'bootbo
 		});
 
 		/**
+		 *
+		 * 
 		 * SET UP THE CONTROLLER
 		 * IT'S JUST A FUNCTION, NOTHING SPECIAL
+		 *
+		 * 
 		 */
-		app.controller = function (appObject) {
+		app.controller = function() {
 
 			this.loadDonations = function() {
-				appObject.investTable.show(new InvestmentTable({ collection: appObject.investmentList }));
+				app.investTable.show(new InvestmentTable({ collection: app.investmentList }));
 			};
 
 			app.vent.on('add:investment', function() {
-				appObject.investmentList.add(new Investment());
+				app.investmentList.add(new Investment());
 			});
 		};
 
 		/**
+		 *
+		 * 
 		 * SET UP THE ROUTER AND SPECIFY THE CONTROLLER
+		 *
+		 * 
 		 */
 		app.router = new Marionette.AppRouter({
 			appRoutes: {
 				'': 'loadDonations'
 			},
-			controller: new app.controller(app)
+			controller: new app.controller()
 		});
 
 		/**
+		 *
+		 * 
 		 * SET UP VIEWS
+		 *
+		 * 
 		 */
 		var ControlBar = Marionette.ItemView.extend({
 			events: {
@@ -115,15 +141,29 @@ require(['jquery', 'underscore', 'marionette', 'backbone', 'accounting', 'bootbo
 				'click .submit-investments': 'submitDonations'
 			},
 			template: _.template($('#tpl-control-bar').html()),
+			onRender: function() {
+				this.displayTotal(app.investmentList.totalAll());
+				this.listenTo(app.investmentList, 'change:total', this.displayTotal);
+			},
 			addDonation: function() {
 				app.vent.trigger('add:investment');
+			},
+			displayTotal: function (total) {
+				this.$('#investment-total').text(accounting.formatMoney(total));
 			}
 		});
 
+		// DEFINES A SINGLE INVESTMENT BOX VIEW
 		var InvestmentBox = Marionette.ItemView.extend({
 			className: 'investment-box',
 			bindings: {
-				'.investment-amount': 'amount',
+				'.investment-amount': {
+					observe: 'amount',
+					events: ['blur'],
+					onSet: function (val) { 
+						return $.isNumeric(val) ? parseFloat(val) : 0;
+					}
+				},
 				'.fund-list': {
 					observe: 'fund',
 					selectOptions: {
@@ -133,21 +173,28 @@ require(['jquery', 'underscore', 'marionette', 'backbone', 'accounting', 'bootbo
 					}
 				}
 			},
-			modelEvents: {
-				'change:fund': '__setFundDescription'
-			},
-			ui: {
-				fundDescription: '.fund-description'
-			},
+			events: { 'click .delete-investment': 'onDelete' },
+			modelEvents: { 'change:fund': '__setFundDescription' },
+			ui: { fundDescription: '.fund-description' },
 			template: _.template($('#tpl-investment-box').html()),
 			onRender: function() {
 				this.stickit();
+				this.__setFundDescription();
+			},
+			onDelete: function() {
+				var box = this;
+
+				this.$el.fadeOut(function() {
+					box.model.destroy();
+				});
 			},
 			__setFundDescription: function() {
-				var newText = _.findWhere(fundList, { name: this.model.get('fund') }).info;
+				var newFund = _.findWhere(fundList, { name: this.model.get('fund') });
 				
 				this.ui.fundDescription.fadeOut(function() {
-					$(this).text(newText).fadeIn();
+					if (newFund) {
+						$(this).text(newFund.info).fadeIn();	
+					}
 				});
 			}
 		});
@@ -162,7 +209,11 @@ require(['jquery', 'underscore', 'marionette', 'backbone', 'accounting', 'bootbo
 
 
 		/**
+		 *
+		 * 
 		 * DEFINE THE OBJECTS IN OUR PROBLEM DOMAIN
+		 *
+		 * 
 		 */
 		var Investment = Backbone.Model.extend({
 			defaults:{
@@ -173,11 +224,12 @@ require(['jquery', 'underscore', 'marionette', 'backbone', 'accounting', 'bootbo
 
 		var InvestmentList = Backbone.Collection.extend({
 			model: Investment,
-			localStorage: new Backbone.LocalStorage('fund-designation'),
+			// localStorage: new Backbone.LocalStorage('semjs-investments'),
 			total: 0,
+			url: 'http://pampang09.wesavebest.com/semjs/investments',
 			initialize: function() {
 				this.on('add remove change:amount',this.totalAll);
-				this.on('change',this.save);
+				this.on('change', function (model) { model.save(); });
 			},
 			totalAll: function() {
 				var newTotal = this.reduce(function (memo, model) {
@@ -186,11 +238,10 @@ require(['jquery', 'underscore', 'marionette', 'backbone', 'accounting', 'bootbo
 
 				if (this.total !== newTotal) {
 					this.total = newTotal;
-					this.trigger('change:total',this.total);
+					this.trigger('change:total', this.total);
 				}
-			},
-			save: function(model) {
-				model.save();
+
+				return this.total;
 			}
 		});
 

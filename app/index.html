@@ -50,14 +50,18 @@
 				<div class="col-md-4">
 					<div class="snippet-box">
 						<img class="face-circle" src="img/faces/face5.jpg">
-						<blockquote class="snippet-text">Requirements doc? What is this? 2004. Take your Web2.0 back to Geocities and watch out: InvestInUsly.io turns money into ideas!</blockquote>
+						<div class="snippet-text">
+							<blockquote>Requirements doc? What is this? 2004. Take your Web2.0 back to Geocities and watch out: InvestInUsly.io turns money into ideas!</blockquote>
+						</div>
 					</div>
 				</div>
 
 				<div class="col-md-4">
 					<div class="snippet-box">
 						<img class="face-circle" src="img/faces/face12.jpg">
-						<blockquote class="snippet-text">I've never felt safer investing my money in startup. InvestInUsly.io seemed to sweep the Internet by storm!</blockquote>
+						<div class="snippet-text">
+							<blockquote>I've never felt safer investing my money in startup. InvestInUsly.io might be the biggest thing since the front-end automation revolution!</blockquote>
+						</div>
 					</div>					
 				</div>
 			</div>
@@ -65,7 +69,7 @@
 
 		<section class="big-section section-blue">
 			<div class="body-content">
-				<h3 class="section-title"><strong>Donate</strong>Now</h3>
+				<h3 class="section-title"><strong>Invest</strong>Now</h3>
 				<p>There's a twist! You tell us how you want your money spent. We're a startup so we know that failing a lot will help us learn.</p>
 				
 				<div class="action-bar" id="control-bar">
@@ -75,7 +79,6 @@
 				</div>
 
 				<div id="investment-list"></div>
-				</div>
 			</div>
 		</section>
 
@@ -99,6 +102,11 @@
 							<li><a href="#">Google+</a></li>
 							<li><a href="#">YouTube</a></li>
 							<li><a href="#">MySpace</a></li>
+							<li><a href="#">Orkut</a></li>
+							<li><a href="#">Friendster</a></li>
+							<li><a href="#">Xing</a></li>
+							<li><a href="#">Flickr</a></li>
+							<li><a href="#">LinkedIn</a></li>
 						</ul>
 					</div>
 					<div class="col-md-6">
@@ -136,7 +144,7 @@
 					</div>
 				</div>
 
-				<div class="col-md-4 fund form-group"> 
+				<div class="col-md-3 fund form-group"> 
 					<label>Which fund it goes to</label>
 					<select class="form-control fund-list"></select>
 				</div>
@@ -146,14 +154,17 @@
 					<p class="fund-description"></p>
 				</div>
 
-				<div class="delete-investment tooltip" data-toggle="tooltip" title="Delete this donation" data-placement="right"></div>
+				<div class="col-md-1">
+					<div class="delete-investment btn btn-link">Remove</div>
+				</div>
+				
 			</div>
 		</script>
 
 		<script type="text/template" id="tpl-control-bar">
 			<button class="btn add-investment">Add more money</button>
 			<button class="btn btn-success submit-investments">Invest now</button>
-			<span id="gift-total">$0.00</span> ready to invest in exciting ideas.
+			<span id="investment-total">$0.00</span> ready to invest in exciting ideas.
 		</script>
 	</body>
 </html>

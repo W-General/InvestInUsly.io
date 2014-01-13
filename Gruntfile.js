@@ -222,6 +222,8 @@ module.exports = function (grunt) {
                         'images/{,*/}*.{webp,gif}',
                         'styles/fonts/*',
                         'scripts/templates/*.html',
+                        'components/**/*.js',
+                        'scripts/**/*.js',
                         'scripts/data/*.json'
                     ]
                 }]
@@ -281,9 +283,9 @@ module.exports = function (grunt) {
         'clean:dist',
         'compass:dist',
         'useminPrepare',
-        'copy:js',
-        'symlink:js',
-        'requirejs',
+        //'copy:js',
+        //s'symlink:js',
+        //'requirejs',
         'imagemin',
         'svgmin',
         'htmlmin',

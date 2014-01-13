@@ -2,7 +2,6 @@
 @import "compass/css3/transition";
 @import "compass/css3/box-shadow";
 @import "compass/css3/box-sizing";
-@import "animate";
 
 $almostBlack: #524A4A;
 $almostBlacker: #332E2E;
@@ -58,22 +57,6 @@ input, .add-on {
 }
 
 hr { clear:both; }
-
-.delete-investment  {
-	border-radius: 10px;
-	position: absolute;
-	right: -15px;
-	top:-15px;
-	background-color: black;
-	opacity: 0;
-
-	&:before {
-		content: 'x';
-		color: white;
-	}
-
-	@include transition(opacity 0.4s ease-out);
-}
 
 .layover {
 	position: relative;
@@ -149,8 +132,10 @@ hr { clear:both; }
 	}
 
 	.snippet-text {
+		background-color: rgba(255, 255, 255, 0.8);
 		display: inline-block;
-		width: 75%;
+		padding: 0.3em;
+		width: 70%;
 	}
 }
 
