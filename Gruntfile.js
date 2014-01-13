@@ -224,7 +224,8 @@ module.exports = function (grunt) {
                         'scripts/templates/*.html',
                         'components/**/*.js',
                         'scripts/**/*.js',
-                        'scripts/data/*.json'
+                        'scripts/data/*.json',
+                        'api/**'
                     ]
                 }]
             },

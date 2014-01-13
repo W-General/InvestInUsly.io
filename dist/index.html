@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<title>InvestInUsly.io • We Love Your Money</title>
+		<meta name="description" content="">
+		<meta name="viewport" content="width=device-width">
+		<link rel="stylesheet" href="styles/main.css">
+		<link href="http://fonts.googleapis.com/css?family=Raleway:200" rel="stylesheet" type="text/css">
+	</head>
+	<body>
+		<!--[if lt IE 7]>
+			<p class="chromeframe">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> or <a href="http://www.google.com/chromeframe/?redirect=true">activate Google Chrome Frame</a> to improve your experience.</p>
+		<![endif]-->
+
+		<section class="big-section guy-bike">
+			<h1 class="big-section-title"><strong>Invest</strong>InUsly.io</h1>
+			<h2 class="sub-title">Angel investment for the next lean mobile cloud startup from San Francisco</h2>
+
+			<div class="layover">
+				<p class="layover-text centered">Join hundreds of other young, good-looking people and invest in us!</p>
+				<img src="img/faces/face1.jpg">
+				<img src="img/faces/face3.jpg">
+				<img src="img/faces/face4.jpg">
+				<img src="img/faces/face6.jpg">
+				<img src="img/faces/face7.jpg"> 
+				<img src="img/faces/face8.jpg">
+				<img src="img/faces/face9.jpg">
+				<img src="img/faces/face10.jpg">
+				<img src="img/faces/face11.jpg">
+				<img src="img/faces/face13.jpg">
+				<img src="img/faces/face14.jpg">
+				<img src="img/faces/face15.jpg">	
+			</div>
+
+			<div class="row snippet-row">
+				<div class="col-md-4">
+					<div class="snippet-box">
+						<img class="face-circle" src="img/faces/face2.jpg">
+						<div class="snippet-text">
+							<blockquote>My investments with InvestInUsly.io were multiplied beyond measure. And that's the great thing: I didn't ever have to measure them!</blockquote>
+						</div>
+					</div>
+				</div>
+
+				<div class="col-md-4">
+					<div class="snippet-box">
+						<img class="face-circle" src="img/faces/face5.jpg">
+						<div class="snippet-text">
+							<blockquote>Requirements doc? What is this? 2004. Take your Web2.0 back to Geocities and watch out: InvestInUsly.io turns money into ideas!</blockquote>
+						</div>
+					</div>
+				</div>
+
+				<div class="col-md-4">
+					<div class="snippet-box">
+						<img class="face-circle" src="img/faces/face12.jpg">
+						<div class="snippet-text">
+							<blockquote>I've never felt safer investing my money in startup. InvestInUsly.io might be the biggest thing since the front-end automation revolution!</blockquote>
+						</div>
+					</div>					
+				</div>
+			</div>
+		</section>
+
+		<section class="big-section section-blue">
+			<div class="body-content">
+				<h3 class="section-title"><strong>Invest</strong>Now</h3>
+				<p>There's a twist! You tell us how you want your money spent. We're a startup so we know that failing a lot will help us learn.</p>
+				
+				<div class="action-bar" id="control-bar">
+					<button class="btn designation-add">Add more money</button>
+					<button class="btn btn-success gift-submit">Donate now</button>
+					<span id="gift-total">$0.00</span> ready to donate.
+				</div>
+
+				<div id="investment-list"></div>
+			</div>
+		</section>
+
+		<footer class="big-section section-black">
+			<section class="container">
+				<section class="row">
+					<div class="col-md-3">
+						<h3 class="section-title">Get<strong>Acquainted</strong></h3>
+						<ul>
+							<li><a href="#">About Us</a></li>
+							<li><a href="#">How We Spend Your Money</a></li>
+							<li><a href="#">Blog About Spending Your Money</a></li>
+							<li><a href="#">Our Wacky Flat Company</a></li>
+						</ul>
+					</div>
+					<div class="col-md-3">
+						<h3 class="section-title">Super<strong>Social</strong></h3>
+						<ul>
+							<li><a href="#">Facebook</a></li>
+							<li><a href="#">Twitter</a></li>
+							<li><a href="#">Google+</a></li>
+							<li><a href="#">YouTube</a></li>
+							<li><a href="#">MySpace</a></li>
+							<li><a href="#">Orkut</a></li>
+							<li><a href="#">Friendster</a></li>
+							<li><a href="#">Xing</a></li>
+							<li><a href="#">Flickr</a></li>
+							<li><a href="#">LinkedIn</a></li>
+						</ul>
+					</div>
+					<div class="col-md-6">
+						<h3 class="section-title">Hear Us <strong>Shout!</strong></h3>
+						<form>
+							<p>We'll shout from the rooftops when we get fully funded. Literally. Enter the address of a building and we'll do it.</p>
+							<div class="form-group">
+								<label>Email address</label>
+								<input type="email" class="form-control" placeholder="Your email">
+							</div>
+							<div class="form-group">
+								<label>Rooftop shout location</label>
+								<input type="text" class="form-control" placeholder="Your building">
+							</div>
+							<input class="btn btn-primary" type="submit">
+						</form>
+					</div>
+				</section>
+			</section>
+			
+			<p class="copyright muted centered">(c) 2014 InvestInUsly.io</p>
+		</footer>
+
+		<script data-main="scripts/main" src="components/requirejs/require.js"></script>
+
+		<script type="text/template" id="tpl-investment-box">
+			<div class="row">
+				<div class="col-md-4 form-group amount">
+					<label>How much you give</label>
+					<div class="input-group">
+						<span class="input-group-addon">$</span>
+						<input type="text" class="form-control investment-amount" placeholder="Amount" />
+					</div>
+				</div>
+
+				<div class="col-md-3 fund form-group"> 
+					<label>Which fund it goes to</label>
+					<select class="form-control fund-list"></select>
+				</div>
+
+				<div class="col-md-4 form-group">
+					<label>What the fund buys</label>
+					<p class="fund-description"></p>
+				</div>
+
+				<div class="col-md-1">
+					<div class="delete-investment btn btn-link">Remove</div>
+				</div>
+				
+			</div>
+		</script>
+
+		<script type="text/template" id="tpl-control-bar">
+			<button class="btn add-investment">Add more money</button>
+			<button class="btn btn-success submit-investments">Invest now</button>
+			<span id="investment-total">$0.00</span> ready to invest in exciting ideas.
+		</script>
+	</body>
+</html>
